@@ -37,6 +37,10 @@ export async function voteOnPoll(app: FastifyInstance) {
           }
         })
         const votes = await redis.zincrby(pollId, -1, userPreviousVoteOnPoll.pollOptionId)
+        voting.publish(pollId, {
+          pollOptionId: userPreviousVoteOnPoll.pollOptionId,
+          votes: Number(votes),
+        })
 
       } else if (userPreviousVoteOnPoll) {
         return reply.status(400).send({ message: 'You have already voted on this poll' })
